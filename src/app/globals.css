@@ -128,3 +128,45 @@
     @apply font-sans;
   }
 }
+
+/* React Flow: alinear controles y minimapa con el tema de la app */
+.react-flow__controls {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background: var(--card);
+  border-bottom-color: var(--border);
+  fill: var(--foreground);
+  color: var(--foreground);
+}
+
+.react-flow__controls-button:hover {
+  background: var(--muted);
+}
+
+.react-flow__minimap {
+  background-color: var(--muted) !important;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px color-mix(in oklch, var(--foreground) 8%, transparent);
+}
+
+.dark .react-flow__minimap {
+  background-color: var(--card) !important;
+}
+
+.dark .react-flow__controls {
+  background: var(--card);
+}
+
+.dark .react-flow__controls-button {
+  background: var(--card);
+}
+
+.dark .react-flow__controls-button:hover {
+  background: var(--muted);
+}

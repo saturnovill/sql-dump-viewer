@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   Background,
   Controls,
@@ -78,6 +79,34 @@ function layoutGraph(nodes: Node[], edges: Edge[]): Node[] {
 export function SchemaGraphView({ dump }: SchemaGraphViewProps) {
   const selectTable = useDumpStore((state) => state.selectTable);
   const setActiveView = useDumpStore((state) => state.setActiveView);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const colorMode = mounted && resolvedTheme === "dark" ? "dark" : "light";
+
+  const minimapColors = useMemo(
+    () =>
+      colorMode === "dark"
+        ? {
+            bgColor: "var(--card)",
+            maskColor: "color-mix(in oklch, var(--background) 50%, transparent)",
+            nodeColor: "oklch(0.75 0 0)",
+            nodeStrokeColor: "var(--border)",
+            maskStrokeColor: "var(--border)",
+          }
+        : {
+            bgColor: "var(--muted)",
+            maskColor: "color-mix(in oklch, var(--foreground) 10%, transparent)",
+            nodeColor: "var(--foreground)",
+            nodeStrokeColor: "var(--border)",
+            maskStrokeColor: "var(--border)",
+          },
+    [colorMode],
+  );
 
   const { nodes, edges } = useMemo(() => {
     const baseNodes: Node[] = dump.tables.map((table) => ({
@@ -134,6 +163,7 @@ export function SchemaGraphView({ dump }: SchemaGraphViewProps) {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            colorMode={colorMode}
             fitView
             fitViewOptions={{ padding: 0.2 }}
             nodesDraggable
@@ -145,9 +175,20 @@ export function SchemaGraphView({ dump }: SchemaGraphViewProps) {
             }}
             proOptions={{ hideAttribution: true }}
           >
-            <Background gap={16} size={1} />
-            <Controls />
-            <MiniMap pannable zoomable />
+            <Background gap={16} size={1} color="var(--border)" />
+            <Controls className="!shadow-md" />
+            <MiniMap
+              pannable
+              zoomable
+              className="!rounded-lg !border !border-border !shadow-sm"
+              bgColor={minimapColors.bgColor}
+              maskColor={minimapColors.maskColor}
+              maskStrokeColor={minimapColors.maskStrokeColor}
+              maskStrokeWidth={1}
+              nodeColor={minimapColors.nodeColor}
+              nodeStrokeColor={minimapColors.nodeStrokeColor}
+              nodeStrokeWidth={1}
+            />
           </ReactFlow>
         )}
       </div>
